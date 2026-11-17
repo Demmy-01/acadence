@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 export default function FinalCTAAndFooter() {
@@ -31,13 +32,13 @@ export default function FinalCTAAndFooter() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a
-              href="#solution"
+            <Link
+              href="/signup"
               className="w-full sm:w-auto px-10 py-4 rounded-full text-sm font-semibold tracking-wide bg-[#171717] text-[#FFFFFF] hover:bg-rose-950 hover:shadow-[0_12px_32px_rgba(225,29,72,0.3)] transition-all hover:scale-[1.03] flex items-center justify-center gap-2 group border border-transparent hover:border-rose-500/30"
             >
               Get Started with Acadence
               <ArrowRight size={16} className="text-rose-400 group-hover:translate-x-1 transition-transform" />
-            </a>
+            </Link>
             <a
               href="#how-it-works"
               className="w-full sm:w-auto px-8 py-4 rounded-full text-sm font-semibold tracking-wide bg-[#F5F3EE] text-[#171717] border border-[#E5E5E5] hover:border-rose-400/50 hover:bg-[#FFFFFF] transition-all"

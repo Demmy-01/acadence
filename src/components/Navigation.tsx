@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Menu, X, ArrowUpRight } from "lucide-react";
 
 export default function Navigation() {
@@ -70,18 +71,18 @@ export default function Navigation() {
 
         {/* Right: Actions */}
         <div className="hidden md:flex items-center gap-6">
-          <a
-            href="#solution"
+          <Link
+            href="/login"
             className="text-sm font-medium text-[#171717] hover:text-rose-600 transition-colors"
           >
             Log In
-          </a>
-          <a
-            href="#solution"
+          </Link>
+          <Link
+            href="/signup"
             className="inline-flex items-center justify-center px-5 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider bg-[#171717] text-[#FFFFFF] hover:bg-rose-950 hover:shadow-[0_4px_18px_rgba(225,29,72,0.3)] transition-all hover:scale-[1.02] shadow-sm border border-transparent hover:border-rose-500/30"
           >
             Get Started
-          </a>
+          </Link>
         </div>
 
         {/* Mobile menu button */}
@@ -110,20 +111,20 @@ export default function Navigation() {
             ))}
           </nav>
           <div className="pt-6 border-t border-[#E5E5E5] flex flex-col gap-3">
-            <a
-              href="#solution"
+            <Link
+              href="/login"
               onClick={() => setMobileMenuOpen(false)}
-              className="text-center py-2 text-sm font-medium text-[#171717]"
+              className="text-center py-2 text-sm font-medium text-[#171717] hover:text-rose-600 transition-colors"
             >
               Log In
-            </a>
-            <a
-              href="#solution"
+            </Link>
+            <Link
+              href="/signup"
               onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center justify-center gap-2 w-full py-3 rounded-full text-xs font-semibold uppercase tracking-wider bg-[#171717] text-[#FFFFFF]"
+              className="flex items-center justify-center gap-2 w-full py-3 rounded-full text-xs font-semibold uppercase tracking-wider bg-[#171717] text-[#FFFFFF] hover:bg-rose-950 transition-colors"
             >
               Get Started <ArrowUpRight size={14} />
-            </a>
+            </Link>
           </div>
         </div>
       )}
