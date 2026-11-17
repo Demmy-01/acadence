@@ -41,20 +41,22 @@ export default function Navigation() {
     >
       <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
         {/* Left: Brand Logo */}
-        <a href="#hero" className="flex items-center gap-3 group">
-          <Image
-            src="/logo.png"
-            alt="Acadence Logo"
-            width={36}
-            height={36}
-            className="h-8 w-auto object-contain transition-transform group-hover:scale-105"
-            priority
-          />
+        <Link href="/" className="flex items-center gap-3 group">
+          <div className="w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-white/90 shadow-[0_4px_16px_rgba(0,0,0,0.06)] flex items-center justify-center p-1.5 transition-all duration-300 group-hover:scale-105 group-hover:bg-white group-hover:shadow-[0_6px_20px_rgba(0,0,0,0.1)] shrink-0">
+            <Image
+              src="/logo.png"
+              alt="Acadence Logo"
+              width={28}
+              height={28}
+              className="h-6 w-auto object-contain"
+              priority
+            />
+          </div>
           <span className="font-semibold text-xl tracking-tight text-[#171717] lowercase flex items-center gap-1.5">
             acadence
             <span className="w-1.5 h-1.5 rounded-full bg-rose-600 animate-pulse" />
           </span>
-        </a>
+        </Link>
 
         {/* Center: Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8">
