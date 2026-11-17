@@ -71,18 +71,17 @@ export default function LoginPage() {
         {/* Top Header: Brand Logo & Back Link */}
         <div className="relative z-10 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative w-9 h-9 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center p-1.5 transition-transform group-hover:scale-105">
-              <Image
-                src="/logo.png"
-                alt="Acadence Logo"
-                width={28}
-                height={28}
-                className="h-6 w-auto object-contain"
-              />
-            </div>
-            <span className="font-semibold text-2xl tracking-tight text-white lowercase flex items-center gap-1.5">
+            <Image
+              src="/logo.png"
+              alt="Acadence Logo"
+              width={36}
+              height={36}
+              className="h-8 w-auto object-contain transition-transform group-hover:scale-105"
+              priority
+            />
+            <span className="font-semibold text-xl tracking-tight text-white lowercase flex items-center gap-1.5">
               acadence
-              <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-600 animate-pulse" />
             </span>
           </Link>
 
@@ -163,25 +162,27 @@ export default function LoginPage() {
 
       {/* RIGHT COLUMN: Minimalist Editorial Login Form */}
       <div className="w-full lg:w-1/2 flex flex-col justify-between p-6 sm:p-10 lg:p-16 xl:p-20 overflow-y-auto">
-        {/* Mobile Header */}
-        <div className="flex lg:hidden items-center justify-between pb-8 mb-4 border-b border-[#E5E5E5]">
-          <Link href="/" className="flex items-center gap-2.5">
+        {/* Right Column Header: Same as Navbar Logo */}
+        <div className="flex items-center justify-between pb-6 mb-4 border-b border-[#E5E5E5]/70">
+          <Link href="/" className="flex items-center gap-3 group">
             <Image
               src="/logo.png"
               alt="Acadence Logo"
-              width={30}
-              height={30}
-              className="h-7 w-auto object-contain"
+              width={36}
+              height={36}
+              className="h-8 w-auto object-contain transition-transform group-hover:scale-105"
+              priority
             />
-            <span className="font-semibold text-xl tracking-tight text-[#171717] lowercase">
+            <span className="font-semibold text-xl tracking-tight text-[#171717] lowercase flex items-center gap-1.5">
               acadence
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-600 animate-pulse" />
             </span>
           </Link>
           <Link
             href="/"
-            className="text-xs font-mono uppercase tracking-wider text-[#777777] hover:text-[#171717] flex items-center gap-1"
+            className="text-xs font-mono uppercase tracking-wider text-[#777777] hover:text-[#171717] flex items-center gap-1.5 transition-colors"
           >
-            <ArrowLeft size={12} /> Home
+            <ArrowLeft size={13} /> Return to Home
           </Link>
         </div>
 
