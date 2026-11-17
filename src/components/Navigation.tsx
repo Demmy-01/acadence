@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Menu, X, ArrowUpRight } from "lucide-react";
+import GlassLogo from "@/components/GlassLogo";
 
 export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -40,23 +41,8 @@ export default function Navigation() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
-        {/* Left: Brand Logo */}
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-white/90 shadow-[0_4px_16px_rgba(0,0,0,0.06)] flex items-center justify-center p-1.5 transition-all duration-300 group-hover:scale-105 group-hover:bg-white group-hover:shadow-[0_6px_20px_rgba(0,0,0,0.1)] shrink-0">
-            <Image
-              src="/logo.png"
-              alt="Acadence Logo"
-              width={28}
-              height={28}
-              className="h-6 w-auto object-contain"
-              priority
-            />
-          </div>
-          <span className="font-semibold text-xl tracking-tight text-[#171717] lowercase flex items-center gap-1.5">
-            acadence
-            <span className="w-1.5 h-1.5 rounded-full bg-rose-600 animate-pulse" />
-          </span>
-        </Link>
+        {/* Left: Brand Logo with 3D Glass Squircle */}
+        <GlassLogo href="/" size="md" textColor="dark" />
 
         {/* Center: Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8">

@@ -29,7 +29,7 @@ export default function Home() {
 
       {/* 05. SECTION FOUR — 03 / CAPABILITIES (FEATURES GRID) */}
       <PlatformFeaturesSection />
-
+      
       {/* 06. SECTION FIVE — 04 / THE PROCESS (HOW IT WORKS TIMELINE) */}
       <HowItWorksSection />
 

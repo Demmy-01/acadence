@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
+import GlassLogo from "@/components/GlassLogo";
 
 export default function FinalCTAAndFooter() {
   return (
@@ -56,21 +57,9 @@ export default function FinalCTAAndFooter() {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12 pb-16 border-b border-[#E5E5E5]">
             {/* Brand Column */}
             <div className="md:col-span-5 flex flex-col items-start">
-              <Link href="/" className="flex items-center gap-3 mb-6 group">
-                <div className="w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-white/90 shadow-[0_4px_16px_rgba(0,0,0,0.06)] flex items-center justify-center p-1.5 transition-all duration-300 group-hover:scale-105 group-hover:bg-white group-hover:shadow-[0_6px_20px_rgba(0,0,0,0.1)] shrink-0">
-                  <Image
-                    src="/logo.png"
-                    alt="Acadence Logo"
-                    width={28}
-                    height={28}
-                    className="h-6 w-auto object-contain"
-                  />
-                </div>
-                <span className="font-semibold text-xl tracking-tight text-[#171717] lowercase flex items-center gap-1.5">
-                  acadence
-                  <span className="w-1.5 h-1.5 rounded-full bg-rose-600 animate-pulse" />
-                </span>
-              </Link>
+              <div className="mb-6">
+                <GlassLogo href="/" size="md" textColor="dark" />
+              </div>
               <p className="text-base text-[#171717] font-serif italic mb-4">
                 Intelligence behind every idea.
               </p>
