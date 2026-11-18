@@ -19,6 +19,7 @@ import {
   BookOpen,
   Check,
 } from "lucide-react";
+import GlassLogo from "@/components/GlassLogo";
 
 export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -121,22 +122,7 @@ export default function SignupPage() {
 
         {/* Top Header: Brand Logo & Back Link */}
         <div className="relative z-10 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-white/90 backdrop-blur-md border border-white/80 shadow-[0_4px_16px_rgba(0,0,0,0.2)] flex items-center justify-center p-1.5 transition-all duration-300 group-hover:scale-105 group-hover:bg-white shrink-0">
-              <Image
-                src="/logo.png"
-                alt="Acadence Logo"
-                width={28}
-                height={28}
-                className="h-6 w-auto object-contain"
-                priority
-              />
-            </div>
-            <span className="font-semibold text-xl tracking-tight text-white lowercase flex items-center gap-1.5">
-              acadence
-              <span className="w-1.5 h-1.5 rounded-full bg-rose-600 animate-pulse" />
-            </span>
-          </Link>
+          <GlassLogo href="/" size="md" textColor="light" />
 
           <Link
             href="/"
@@ -219,22 +205,7 @@ export default function SignupPage() {
       <div className="w-full lg:w-7/12 flex flex-col justify-between p-6 sm:p-10 lg:p-14 xl:p-16 overflow-y-auto">
         {/* Right Column Header: Same as Navbar Logo */}
         <div className="flex items-center justify-between pb-6 mb-4 border-b border-[#E5E5E5]/70">
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-white/90 shadow-[0_4px_16px_rgba(0,0,0,0.06)] flex items-center justify-center p-1.5 transition-all duration-300 group-hover:scale-105 group-hover:bg-white group-hover:shadow-[0_6px_20px_rgba(0,0,0,0.1)] shrink-0">
-              <Image
-                src="/logo.png"
-                alt="Acadence Logo"
-                width={28}
-                height={28}
-                className="h-6 w-auto object-contain"
-                priority
-              />
-            </div>
-            <span className="font-semibold text-xl tracking-tight text-[#171717] lowercase flex items-center gap-1.5">
-              acadence
-              <span className="w-1.5 h-1.5 rounded-full bg-rose-600 animate-pulse" />
-            </span>
-          </Link>
+          <GlassLogo href="/" size="md" textColor="dark" />
           <Link
             href="/"
             className="text-xs font-mono uppercase tracking-wider text-[#777777] hover:text-[#171717] flex items-center gap-1.5 transition-colors"
