@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useMemo } from "react";
+import React, { useRef, useMemo, useState, useEffect } from "react";
 import Image from "next/image";
 import {
   UserCircle,
@@ -12,7 +12,6 @@ import {
 import {
   motion,
   useScroll,
-  useTransform,
   useMotionValueEvent,
   AnimatePresence,
 } from "framer-motion";
@@ -79,100 +78,96 @@ const steps = [
 ];
 
 const STEP_COUNT = steps.length;
+const CARD_HEIGHT = 74; // Compact, perfectly proportioned card height
+const CARD_GAP = 12;
 
 /* ================================================================== */
-/*  Curly SVG path that connects 5 node positions                     */
-/*  The path winds left-right as it descends                          */
+/*  Curly SVG path connecting 5 step nodes                            */
 /* ================================================================== */
 function CurlyPath({
   progress,
   nodePositions,
 }: {
-  progress: number; // 0..1 overall scroll progress
-  nodePositions: number[]; // y-centers for each node (px)
+  progress: number;
+  nodePositions: number[];
 }) {
-  // Build a curly S-shaped path through the node positions
+  const pathRef = useRef<SVGPathElement>(null);
+  const [totalLength, setTotalLength] = useState(500);
+
   const pathD = useMemo(() => {
     if (nodePositions.length < 2) return "";
-    const xCenter = 28; // center x of the SVG column
-    const amplitude = 16; // how far the curves swing
+    const xCenter = 22;
+    const amplitude = 14;
     const pts = nodePositions.map((y, i) => ({
       x: xCenter + (i % 2 === 0 ? -amplitude : amplitude) * (i === 0 ? 0 : 1),
       y,
     }));
-    // Start at first node, center
     let d = `M ${xCenter} ${pts[0].y}`;
     for (let i = 1; i < pts.length; i++) {
       const prev = pts[i - 1];
       const curr = pts[i];
       const midY = (prev.y + curr.y) / 2;
-      // Cubic bezier: control points swing out horizontally
-      const cp1x = prev.x;
-      const cp1y = midY;
-      const cp2x = curr.x;
-      const cp2y = midY;
-      d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${curr.x} ${curr.y}`;
+      d += ` C ${prev.x} ${midY}, ${curr.x} ${midY}, ${curr.x} ${curr.y}`;
     }
     return d;
   }, [nodePositions]);
 
-  // Approximate total path length (generous overestimate is fine for dasharray)
-  const totalLen = useMemo(() => {
-    if (nodePositions.length < 2) return 0;
-    let len = 0;
-    for (let i = 1; i < nodePositions.length; i++) {
-      len += Math.abs(nodePositions[i] - nodePositions[i - 1]) * 1.4;
+  useEffect(() => {
+    if (pathRef.current) {
+      const len = pathRef.current.getTotalLength();
+      if (len > 0) setTotalLength(len);
     }
-    return len;
-  }, [nodePositions]);
+  }, [pathD]);
 
-  const drawnLen = progress * totalLen;
+  const drawnLen = Math.min(totalLength, Math.max(0, progress * totalLength));
 
   return (
     <svg
-      className="absolute left-0 top-0 w-14 h-full pointer-events-none"
-      style={{ overflow: "visible" }}
+      className="absolute left-0 top-0 w-12 pointer-events-none"
+      style={{
+        overflow: "visible",
+        height: (nodePositions[nodePositions.length - 1] || 400) + 20,
+      }}
     >
-      {/* Background faint path */}
+      {/* Faint background path */}
       <path
         d={pathD}
         fill="none"
-        stroke="#E5E5E5"
-        strokeWidth={2}
+        stroke="#E2E0D8"
+        strokeWidth={2.5}
         strokeLinecap="round"
       />
       {/* Animated drawn path */}
       <path
+        ref={pathRef}
         d={pathD}
         fill="none"
-        stroke="url(#pathGrad)"
-        strokeWidth={2.5}
+        stroke="url(#curlyGradient)"
+        strokeWidth={3}
         strokeLinecap="round"
-        strokeDasharray={totalLen}
-        strokeDashoffset={totalLen - drawnLen}
-        style={{ transition: "stroke-dashoffset 0.15s linear" }}
+        strokeDasharray={totalLength}
+        strokeDashoffset={totalLength - drawnLen}
+        style={{ transition: "stroke-dashoffset 0.12s linear" }}
       />
-      {/* Gradient for the drawn line */}
       <defs>
-        <linearGradient id="pathGrad" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id="curlyGradient" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#e11d48" />
           <stop offset="100%" stopColor="#be123c" />
         </linearGradient>
       </defs>
       {/* Node dots */}
       {nodePositions.map((y, i) => {
-        const stepProgress = i / (STEP_COUNT - 1);
-        const isReached = progress >= stepProgress - 0.02;
+        const isReached = progress >= i / (STEP_COUNT - 1) - 0.03;
         return (
           <circle
             key={i}
-            cx={28}
+            cx={22}
             cy={y}
-            r={isReached ? 7 : 5}
-            fill={isReached ? "#e11d48" : "#fff"}
-            stroke={isReached ? "#e11d48" : "#D4D4D4"}
+            r={isReached ? 6.5 : 4.5}
+            fill={isReached ? "#e11d48" : "#FFFFFF"}
+            stroke={isReached ? "#e11d48" : "#C4C2BA"}
             strokeWidth={isReached ? 0 : 2}
-            style={{ transition: "all 0.3s ease" }}
+            style={{ transition: "all 0.25s ease" }}
           />
         );
       })}
@@ -181,31 +176,31 @@ function CurlyPath({
 }
 
 /* ================================================================== */
-/*  Right panel – crossfade between steps                             */
+/*  Right-side detail panel with smooth crossfade                     */
 /* ================================================================== */
 function DetailPanel({ stepIndex }: { stepIndex: number }) {
   const step = steps[stepIndex];
   const progressPercent = ((stepIndex + 1) / STEP_COUNT) * 100;
 
   return (
-    <div className="bg-[#F5F3EE] border border-rose-200/80 rounded-3xl p-6 sm:p-8 lg:p-10 shadow-[0_20px_60px_rgba(23,23,23,0.06)] flex flex-col justify-between relative overflow-hidden min-h-[520px]">
-      {/* Top progress bar */}
+    <div className="bg-[#F5F3EE] border border-rose-200/80 rounded-3xl p-5 sm:p-7 lg:p-8 shadow-[0_20px_60px_rgba(23,23,23,0.06)] flex flex-col justify-between relative overflow-hidden w-full max-w-2xl mx-auto">
+      {/* Top red progress bar */}
       <div className="absolute top-0 left-0 right-0 h-1.5 bg-[#E5E5E5]">
         <motion.div
           className="h-full bg-gradient-to-r from-rose-600 to-rose-400"
           initial={false}
           animate={{ width: `${progressPercent}%` }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
+          transition={{ duration: 0.45, ease: "easeOut" }}
         />
       </div>
 
       <div>
         {/* Stage visual photo banner */}
-        <div className="relative h-48 sm:h-56 w-full rounded-2xl overflow-hidden shadow-md mb-6 border border-[#171717]/10">
+        <div className="relative h-44 sm:h-52 lg:h-56 w-full rounded-2xl overflow-hidden shadow-md mb-5 border border-[#171717]/10">
           <AnimatePresence mode="wait">
             <motion.div
               key={stepIndex}
-              initial={{ opacity: 0, scale: 1.04 }}
+              initial={{ opacity: 0, scale: 1.03 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.98 }}
               transition={{ duration: 0.35, ease: "easeOut" }}
@@ -221,22 +216,20 @@ function DetailPanel({ stepIndex }: { stepIndex: number }) {
               />
             </motion.div>
           </AnimatePresence>
-          {/* Vignette */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20 z-10" />
 
-          {/* Overlaid badges */}
-          <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-20">
-            <span className="inline-flex items-center gap-1.5 bg-rose-600/95 backdrop-blur-md text-white text-[11px] font-mono font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-sm">
+          <div className="absolute top-3.5 left-4 right-4 flex justify-between items-center z-20">
+            <span className="inline-flex items-center gap-1.5 bg-rose-600/95 backdrop-blur-md text-white text-[10px] sm:text-[11px] font-mono font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-sm">
               <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
               PHASE {step.num} // {step.tag}
             </span>
-            <span className="text-2xl font-mono font-extrabold text-white/50">
+            <span className="text-xl sm:text-2xl font-mono font-extrabold text-white/50">
               {step.num} / 05
             </span>
           </div>
 
-          <div className="absolute bottom-4 left-4 right-4 z-20">
-            <h4 className="text-xl sm:text-2xl font-bold text-white tracking-tight drop-shadow-sm mb-1">
+          <div className="absolute bottom-3.5 left-4 right-4 z-20">
+            <h4 className="text-lg sm:text-2xl font-bold text-white tracking-tight drop-shadow-sm mb-0.5">
               {step.title}
             </h4>
             <p className="text-xs sm:text-sm text-rose-200 font-medium">
@@ -245,28 +238,28 @@ function DetailPanel({ stepIndex }: { stepIndex: number }) {
           </div>
         </div>
 
-        {/* Description with crossfade */}
+        {/* Description text */}
         <AnimatePresence mode="wait">
           <motion.div
             key={`desc-${stepIndex}`}
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
           >
-            <p className="text-base sm:text-lg text-[#171717] font-medium leading-relaxed mb-5">
+            <p className="text-sm sm:text-base text-[#171717] font-medium leading-relaxed mb-4">
               {step.desc}
             </p>
 
             {/* Deliverables box */}
-            <div className="bg-[#FFFFFF] border border-rose-200/80 rounded-2xl p-5 shadow-xs">
-              <div className="flex items-center gap-2 mb-2">
+            <div className="bg-[#FFFFFF] border border-rose-200/80 rounded-2xl p-4 sm:p-4.5 shadow-xs">
+              <div className="flex items-center gap-2 mb-1.5">
                 <span className="w-2 h-2 rounded-full bg-rose-600" />
-                <span className="text-[11px] font-mono uppercase text-rose-950 tracking-wider font-bold">
+                <span className="text-[10px] sm:text-[11px] font-mono uppercase text-rose-950 tracking-wider font-bold">
                   Operational Deliverables & Mechanics:
                 </span>
               </div>
-              <p className="text-sm text-[#333333] leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#333333] leading-relaxed">
                 {step.detail}
               </p>
             </div>
@@ -274,24 +267,20 @@ function DetailPanel({ stepIndex }: { stepIndex: number }) {
         </AnimatePresence>
       </div>
 
-      {/* Bottom footer */}
-      <div className="flex items-center justify-between pt-5 mt-5 border-t border-[#E5E5E5]">
+      {/* Bottom footer bar */}
+      <div className="flex items-center justify-between pt-4 mt-4 border-t border-[#E5E5E5]">
         <div className="flex items-center gap-2">
           <span className="text-xs font-mono font-bold text-[#171717]">
             Stage {stepIndex + 1} of {STEP_COUNT}
           </span>
-          <span className="text-xs text-[#777777] font-mono">
-            • {step.tag}
-          </span>
+          <span className="text-xs text-[#777777] font-mono">• {step.tag}</span>
         </div>
         <div className="flex gap-1.5">
           {steps.map((_, i) => (
             <div
               key={i}
               className={`h-1.5 rounded-full transition-all duration-300 ${
-                i <= stepIndex
-                  ? "w-5 bg-rose-500"
-                  : "w-1.5 bg-[#D4D4D4]"
+                i <= stepIndex ? "w-5 bg-rose-500" : "w-1.5 bg-[#D4D4D4]"
               }`}
             />
           ))}
@@ -302,56 +291,30 @@ function DetailPanel({ stepIndex }: { stepIndex: number }) {
 }
 
 /* ================================================================== */
-/*  Main section                                                      */
+/*  Main section — Header Up Above & Pinned Viewport                  */
 /* ================================================================== */
 export default function HowItWorksSection() {
-  /* ----- scroll tracking ----- */
   const sectionRef = useRef<HTMLDivElement>(null);
+
+  /* ---- Scroll progress through the tall 500vh container (0–1) ---- */
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end end"],
   });
 
-  // Map overall scroll to 0..1 progress
-  // Active step derived from progress
-  const [activeStep, setActiveStep] = React.useState(0);
+  const [activeStep, setActiveStep] = useState(0);
+  const [lineProgressValue, setLineProgressValue] = useState(0);
 
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    // Divide into 5 equal segments
+    // Divide 0..1 range into STEP_COUNT equal segments
     const raw = Math.floor(latest * STEP_COUNT);
-    const clamped = Math.max(0, Math.min(STEP_COUNT - 1, raw));
-    setActiveStep(clamped);
+    setActiveStep(Math.max(0, Math.min(STEP_COUNT - 1, raw)));
+    setLineProgressValue(latest);
   });
 
-  // Progress for the curly line drawing
-  const lineProgress = useTransform(scrollYProgress, [0, 1], [0, 1]);
-  const [lineProgressValue, setLineProgressValue] = React.useState(0);
-  useMotionValueEvent(lineProgress, "change", (v) => setLineProgressValue(v));
-
-  // The y-positions of the 5 nodes along the left column
-  // We space them evenly across the left column height
-  const cardHeight = 92; // approximate height of each step card in px
-  const cardGap = 16;
-  const nodePositions = useMemo(() => {
-    return steps.map(
-      (_, i) => i * (cardHeight + cardGap) + cardHeight / 2
-    );
-  }, []);
-
-  const totalListHeight = (STEP_COUNT - 1) * (cardHeight + cardGap) + cardHeight;
-
-  // How far to shift the list so the active card is vertically centered
-  // On desktop, viewport center of the sticky container is roughly 50vh
-  // We offset the list upwards as activeStep increases
-  const listOffset = useTransform(
-    scrollYProgress,
-    [0, 1],
-    [0, -(totalListHeight - cardHeight)]
-  );
-
-  /* ----- prefers-reduced-motion ----- */
-  const [reducedMotion, setReducedMotion] = React.useState(false);
-  React.useEffect(() => {
+  /* ---- Reduced motion ---- */
+  const [reducedMotion, setReducedMotion] = useState(false);
+  useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     setReducedMotion(mq.matches);
     const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
@@ -359,164 +322,210 @@ export default function HowItWorksSection() {
     return () => mq.removeEventListener("change", handler);
   }, []);
 
+  /* ---- Precise node positions centered on each card ---- */
+  const nodePositions = useMemo(() => {
+    return steps.map((_, i) => i * (CARD_HEIGHT + CARD_GAP) + CARD_HEIGHT / 2);
+  }, []);
+
   return (
-    <section id="how-it-works" className="relative border-t border-[#E5E5E5]">
-      {/* Scroll-height container: 5 × 100vh to give each step a full viewport of scroll distance */}
-      <div ref={sectionRef} style={{ height: `${STEP_COUNT * 100}vh` }} className="relative">
-        {/* Sticky inner wrapper — stays pinned in the viewport */}
-        <div className="sticky top-0 h-screen overflow-hidden bg-[#FFFFFF]">
-          <div className="max-w-7xl mx-auto px-6 md:px-12 h-full flex flex-col">
-            {/* Section header — compact in sticky mode */}
-            <div className="pt-10 pb-6 md:pt-14 md:pb-8 shrink-0">
-              <div className="inline-flex items-center gap-2 mb-3 px-3 py-1 rounded-full bg-white border border-[#E5E5E5] shadow-xs">
-                <span className="w-2 h-2 rounded-full bg-rose-600" />
-                <span className="text-xs font-mono font-bold tracking-[0.2em] text-[#171717] uppercase">
-                  04 / THE PROCESS
-                </span>
+    <section id="how-it-works" className="relative border-t border-[#E5E5E5] bg-[#FFFFFF]">
+      {/*
+        01. Section Header:
+        Placed in standard document flow ABOVE the pinned view.
+        As the user scrolls down, this text scrolls up and out of the viewport,
+        leaving the full 100vh height dedicated to the interactive step cards and descriptions!
+      */}
+      <div className="pt-24 pb-14 md:pt-32 md:pb-18 max-w-7xl mx-auto px-6 md:px-12">
+        <div className="max-w-3xl">
+          <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full bg-white border border-[#E5E5E5] shadow-2xs">
+            <span className="w-2 h-2 rounded-full bg-rose-600" />
+            <span className="text-xs font-mono font-bold tracking-[0.2em] text-[#171717] uppercase">
+              04 / THE PROCESS
+            </span>
+          </div>
+          <h2 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-[#171717] leading-[1.08] mb-6">
+            From your first idea to your{" "}
+            <span className="font-serif italic font-normal text-rose-600">
+              final submission.
+            </span>
+          </h2>
+          <p className="text-base sm:text-lg text-[#333333] font-normal leading-relaxed">
+            A structured, linear milestone workflow engineered to prevent
+            procrastination, remove ambiguity, and guarantee genuine academic
+            excellence.
+          </p>
+        </div>
+      </div>
+
+      {/*
+        02. Tall Scroll Track: STEP_COUNT × 100vh = 500vh.
+        Provides 100vh of scroll distance per step.
+      */}
+      <div
+        ref={sectionRef}
+        style={{ height: `${STEP_COUNT * 100}vh` }}
+        className="relative"
+      >
+        {/*
+          Pinned Viewport:
+          position: sticky locks to top: 0 with full 100vh screen space.
+          The cards on the left are vertically centered in the middle of the page
+          and clearly visible at all times!
+        */}
+        <div className="sticky top-0 h-screen w-full bg-[#FFFFFF] overflow-hidden z-20 flex items-center justify-center">
+          <div className="max-w-7xl mx-auto px-6 md:px-12 w-full py-4">
+            {/* ---- Mobile active card banner (stacked view) ---- */}
+            <div className="block lg:hidden mb-4">
+              <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-[#171717] text-white border border-rose-500/50 shadow-md">
+                <div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-rose-500 shadow-xs">
+                  <Image
+                    src={steps[activeStep].image}
+                    alt={steps[activeStep].title}
+                    fill
+                    sizes="60px"
+                    className="object-cover"
+                  />
+                  <span className="absolute top-0.5 left-0.5 text-[8px] font-mono font-bold px-1.5 py-0.5 rounded bg-rose-600 text-white">
+                    {steps[activeStep].num}
+                  </span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-rose-400 block">
+                    {steps[activeStep].tag}
+                  </span>
+                  <h3 className="text-xs sm:text-sm font-bold tracking-tight truncate">
+                    {steps[activeStep].title}
+                  </h3>
+                  <p className="text-[10px] text-rose-100/80 truncate">
+                    {steps[activeStep].subtitle}
+                  </p>
+                </div>
+                <div className="text-xs font-mono font-bold text-rose-400 shrink-0">
+                  {activeStep + 1} / 5
+                </div>
               </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-[#171717] leading-[1.08] mb-2">
-                From your first idea to your{" "}
-                <span className="font-serif italic font-normal text-rose-600">
-                  final submission.
-                </span>
-              </h2>
-              <p className="text-sm sm:text-base text-[#333333] font-normal leading-relaxed max-w-2xl">
-                A structured, linear milestone workflow engineered to prevent
-                procrastination, remove ambiguity, and guarantee genuine academic
-                excellence.
-              </p>
             </div>
 
-            {/* Main content: left step list + right detail panel */}
-            <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 pb-8">
-              {/* ========== LEFT: Steps with curly line ========== */}
-              <div className="lg:col-span-5 relative flex items-center overflow-hidden">
-                {/* Curly connecting SVG line */}
-                <div
-                  className="absolute left-0 top-0 bottom-0 w-14 hidden lg:block"
-                  style={{ height: totalListHeight }}
-                >
+            {/* ---- Main 2-Column Workspace (Vertically Centered) ---- */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
+              {/* ========== LEFT: 5 Step Cards Centered in Viewport ========== */}
+              <div className="hidden lg:block lg:col-span-5 relative">
+                {/* Curly SVG Path running along the cards */}
+                <div className="absolute left-0 top-0 w-12 h-full">
                   <CurlyPath
-                    progress={lineProgressValue}
+                    progress={reducedMotion ? 1 : lineProgressValue}
                     nodePositions={nodePositions}
                   />
                 </div>
 
-                {/* Scrolling card list */}
-                <motion.div
-                  className="relative w-full lg:pl-16"
-                  style={
-                    reducedMotion
-                      ? undefined
-                      : { y: listOffset }
-                  }
-                >
-                  <div className="space-y-4">
-                    {steps.map((step, idx) => {
-                      const isActive = idx === activeStep;
-                      const isPassed = idx < activeStep;
-                      const isFuture = idx > activeStep;
+                {/* 5 Step Cards Stack — Always in the middle, crisp and clearly visible! */}
+                <div className="pl-12 space-y-3">
+                  {steps.map((step, idx) => {
+                    const isActive = idx === activeStep;
+                    const isPassed = idx < activeStep;
 
-                      return (
-                        <motion.div
-                          key={step.num}
-                          initial={false}
-                          animate={{
-                            scale: isActive ? 1 : 0.97,
-                            opacity: isFuture ? 0.45 : 1,
-                          }}
-                          transition={{ duration: reducedMotion ? 0 : 0.35, ease: "easeOut" }}
-                          className={`p-3.5 sm:p-4 rounded-2xl border transition-colors duration-300 flex items-center gap-4 ${
+                    return (
+                      <motion.div
+                        key={step.num}
+                        initial={false}
+                        animate={{
+                          scale: isActive ? 1.02 : 1,
+                          x: isActive ? 6 : 0,
+                        }}
+                        transition={{ duration: reducedMotion ? 0 : 0.25, ease: "easeOut" }}
+                        style={{ height: `${CARD_HEIGHT}px` }}
+                        className={`p-3 rounded-2xl border transition-all duration-300 flex items-center gap-3.5 select-none ${
+                          isActive
+                            ? "bg-[#171717] text-[#FFFFFF] border-rose-500/60 shadow-[0_12px_32px_rgba(225,29,72,0.18)]"
+                            : isPassed
+                            ? "bg-white text-[#171717] border-emerald-300/80 shadow-xs opacity-90"
+                            : "bg-[#F5F3EE] text-[#171717] border-[#E5E5E5] opacity-80 hover:opacity-100"
+                        }`}
+                      >
+                        {/* Thumbnail */}
+                        <div
+                          className={`relative w-12 h-12 rounded-xl overflow-hidden shrink-0 border transition-all duration-300 ${
                             isActive
-                              ? "bg-[#171717] text-[#FFFFFF] border-rose-500/50 shadow-[0_14px_35px_rgba(225,29,72,0.18)]"
+                              ? "border-rose-500 shadow-md ring-2 ring-rose-500/40"
                               : isPassed
-                              ? "bg-white text-[#171717] border-emerald-200/80 shadow-xs"
-                              : "bg-[#F5F3EE] text-[#171717] border-[#E5E5E5]"
+                              ? "border-emerald-400 ring-1 ring-emerald-300/40"
+                              : "border-[#E5E5E5]"
                           }`}
                         >
-                          {/* Thumbnail */}
-                          <div
-                            className={`relative w-16 h-16 sm:w-18 sm:h-18 rounded-xl overflow-hidden shrink-0 border transition-all duration-300 ${
+                          <Image
+                            src={step.image}
+                            alt={step.title}
+                            fill
+                            sizes="60px"
+                            className={`object-cover transition-transform duration-500 ${
                               isActive
-                                ? "border-rose-500 shadow-md ring-2 ring-rose-500/40"
+                                ? "scale-110"
                                 : isPassed
-                                ? "border-emerald-400 ring-1 ring-emerald-300/40"
-                                : "border-[#E5E5E5]"
+                                ? "scale-100 saturate-75"
+                                : "opacity-80"
+                            }`}
+                          />
+                          <div className="absolute inset-0 bg-black/20" />
+                          <span
+                            className={`absolute top-0.5 left-0.5 text-[8px] font-mono font-bold px-1.5 py-0.5 rounded shadow-xs ${
+                              isActive
+                                ? "bg-rose-600 text-white"
+                                : isPassed
+                                ? "bg-emerald-600 text-white"
+                                : "bg-black/70 text-white"
                             }`}
                           >
-                            <Image
-                              src={step.image}
-                              alt={step.title}
-                              fill
-                              sizes="80px"
-                              className={`object-cover transition-transform duration-500 ${
-                                isActive
-                                  ? "scale-110"
-                                  : isPassed
-                                  ? "scale-100 saturate-50"
-                                  : "opacity-70"
-                              }`}
-                            />
-                            <div className="absolute inset-0 bg-black/25" />
-                            <span
-                              className={`absolute top-1.5 left-1.5 text-[9px] font-mono font-bold px-1.5 py-0.5 rounded shadow-xs ${
-                                isActive
-                                  ? "bg-rose-600 text-white"
-                                  : isPassed
-                                  ? "bg-emerald-600 text-white"
-                                  : "bg-black/70 text-white"
-                              }`}
-                            >
-                              {isPassed ? "✓" : step.num}
-                            </span>
-                          </div>
+                            {isPassed ? "✓" : step.num}
+                          </span>
+                        </div>
 
-                          {/* Text */}
-                          <div className="flex-1 min-w-0">
-                            <span
-                              className={`text-[10px] font-mono font-bold uppercase tracking-wider block mb-0.5 ${
-                                isActive
-                                  ? "text-rose-400"
-                                  : isPassed
-                                  ? "text-emerald-600"
-                                  : "text-rose-600"
-                              }`}
-                            >
-                              {step.tag}
-                            </span>
-                            <h3 className="text-sm sm:text-base font-bold tracking-tight truncate mb-0.5">
-                              {step.title}
-                            </h3>
-                            <p
-                              className={`text-xs truncate ${
-                                isActive
-                                  ? "text-rose-100/80"
-                                  : isPassed
-                                  ? "text-emerald-700/70"
-                                  : "text-[#777777]"
-                              }`}
-                            >
-                              {step.subtitle}
-                            </p>
-                          </div>
+                        {/* Title & Tag */}
+                        <div className="flex-1 min-w-0">
+                          <span
+                            className={`text-[9px] font-mono font-bold uppercase tracking-wider block mb-0.5 ${
+                              isActive
+                                ? "text-rose-400"
+                                : isPassed
+                                ? "text-emerald-600"
+                                : "text-rose-600"
+                            }`}
+                          >
+                            {step.tag}
+                          </span>
+                          <h3
+                            className={`text-xs sm:text-sm font-bold tracking-tight truncate mb-0.5 ${
+                              isActive
+                                ? "text-white"
+                                : "text-[#171717]"
+                            }`}
+                          >
+                            {step.title}
+                          </h3>
+                          <p
+                            className={`text-[11px] truncate ${
+                              isActive
+                                ? "text-rose-100/80"
+                                : isPassed
+                                ? "text-emerald-700/80"
+                                : "text-[#666666]"
+                            }`}
+                          >
+                            {step.subtitle}
+                          </p>
+                        </div>
 
-                          {/* Active indicator */}
-                          {isActive && (
-                            <motion.div
-                              layoutId="activeIndicator"
-                              className="w-2 h-2 rounded-full bg-rose-500 shrink-0"
-                              transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                            />
-                          )}
-                        </motion.div>
-                      );
-                    })}
-                  </div>
-                </motion.div>
+                        {/* Active dot indicator */}
+                        {isActive && (
+                          <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse shrink-0 mr-1" />
+                        )}
+                      </motion.div>
+                    );
+                  })}
+                </div>
               </div>
 
-              {/* ========== RIGHT: Detail panel ========== */}
-              <div className="lg:col-span-7 flex items-center">
+              {/* ========== RIGHT: Detail Panel ========== */}
+              <div className="lg:col-span-7 flex items-center justify-center">
                 <div className="w-full">
                   {reducedMotion ? (
                     <DetailPanel stepIndex={activeStep} />
@@ -524,9 +533,9 @@ export default function HowItWorksSection() {
                     <AnimatePresence mode="wait">
                       <motion.div
                         key={activeStep}
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 16 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -16 }}
+                        exit={{ opacity: 0, y: -12 }}
                         transition={{ duration: 0.35, ease: "easeOut" }}
                       >
                         <DetailPanel stepIndex={activeStep} />

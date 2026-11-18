@@ -14,7 +14,7 @@ import FinalCTAAndFooter from "@/components/FinalCTAAndFooter";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#FFFFFF] text-[#171717] selection:bg-[#171717] selection:text-[#FFFFFF] overflow-x-hidden">
+    <main className="min-h-screen bg-[#FFFFFF] text-[#171717] selection:bg-[#171717] selection:text-[#FFFFFF]">
       {/* 01. NAVIGATION */}
       <Navigation />
 
