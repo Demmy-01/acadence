@@ -40,12 +40,12 @@ export default function FinalCTAAndFooter() {
               Get Started with Acadence
               <ArrowRight size={16} className="text-rose-400 group-hover:translate-x-1 transition-transform" />
             </Link>
-            <a
-              href="#how-it-works"
+            <Link
+              href="/platform"
               className="w-full sm:w-auto px-8 py-4 rounded-full text-sm font-semibold tracking-wide bg-[#F5F3EE] text-[#171717] border border-[#E5E5E5] hover:border-rose-400/50 hover:bg-[#FFFFFF] transition-all"
             >
-              See Workflow
-            </a>
+              See Workflow & Platform →
+            </Link>
           </div>
         </div>
       </section>
@@ -77,57 +77,57 @@ export default function FinalCTAAndFooter() {
               </h4>
               <ul className="space-y-3 text-sm text-[#777777]">
                 <li>
-                  <a href="#hero" className="hover:text-[#171717] transition-colors">
-                    Home
-                  </a>
+                  <Link href="/" className="hover:text-[#171717] transition-colors">
+                    Home Overview
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#problem"
+                  <Link
+                    href="/#problem"
                     className="hover:text-[#171717] transition-colors"
                   >
                     The Problem
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#solution"
+                  <Link
+                    href="/#solution"
                     className="hover:text-[#171717] transition-colors"
                   >
                     Solution Workspace
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#features"
+                  <Link
+                    href="/#disciplines"
                     className="hover:text-[#171717] transition-colors"
                   >
-                    Platform Features
-                  </a>
+                    Explore Disciplines (Marquee)
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#how-it-works"
+                  <Link
+                    href="/platform#features"
                     className="hover:text-[#171717] transition-colors"
                   >
-                    How It Works
-                  </a>
+                    Platform Capabilities
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#disciplines"
+                  <Link
+                    href="/platform#how-it-works"
                     className="hover:text-[#171717] transition-colors"
                   >
-                    Explore Disciplines
-                  </a>
+                    The 5-Stage Process
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#faq"
+                  <Link
+                    href="/platform#faq"
                     className="hover:text-[#171717] transition-colors"
                   >
                     Frequently Asked Questions
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -139,14 +139,14 @@ export default function FinalCTAAndFooter() {
               </h4>
               <ul className="space-y-3 text-sm text-[#777777] mb-8">
                 <li>
-                  <a href="#integrity" className="hover:text-[#171717] transition-colors">
+                  <Link href="/platform#integrity" className="hover:text-[#171717] transition-colors">
                     Academic Ethics Policy
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#integrity" className="hover:text-[#171717] transition-colors">
+                  <Link href="/platform#integrity" className="hover:text-[#171717] transition-colors">
                     Faculty & Supervisor Transparency
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <a href="#integrity" className="hover:text-[#171717] transition-colors">

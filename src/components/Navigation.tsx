@@ -3,12 +3,14 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu, X, ArrowUpRight } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Menu, X, ArrowUpRight, Sparkles } from "lucide-react";
 import GlassLogo from "@/components/GlassLogo";
 
 export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,15 +24,27 @@ export default function Navigation() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const navLinks = [
-    { name: "Home", href: "#hero" },
-    { name: "The Problem", href: "#problem" },
-    { name: "Solution", href: "#solution" },
-    { name: "Features", href: "#features" },
-    { name: "How It Works", href: "#how-it-works" },
-    { name: "Disciplines", href: "#disciplines" },
-    { name: "FAQs", href: "#faq" },
-  ];
+  const isPlatformPage =
+    pathname?.startsWith("/platform") ||
+    pathname?.startsWith("/features") ||
+    pathname?.startsWith("/workflow");
+
+  // Dynamic Navigation Links depending on which page the user is viewing
+  const navLinks = isPlatformPage
+    ? [
+        { name: "Overview (Home)", href: "/" },
+        { name: "Capabilities", href: "#features" },
+        { name: "The Process", href: "#how-it-works" },
+        { name: "Academic Integrity", href: "#integrity" },
+        { name: "FAQs", href: "#faq" },
+      ]
+    : [
+        { name: "Home", href: "#hero" },
+        { name: "The Problem", href: "#problem" },
+        { name: "Solution", href: "#solution" },
+        { name: "Disciplines", href: "#disciplines" },
+        { name: "Platform & Workflow", href: "/platform", isPill: true },
+      ];
 
   return (
     <header
@@ -45,20 +59,35 @@ export default function Navigation() {
         <GlassLogo href="/" size="md" textColor="dark" />
 
         {/* Center: Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <a
-              key={link.name}
-              href={link.href}
-              className="text-sm font-medium text-[#333333] hover:text-[#171717] transition-colors relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1.5px] after:bg-rose-600 hover:after:w-full after:transition-all after:duration-200"
-            >
-              {link.name}
-            </a>
-          ))}
+        <nav className="hidden md:flex items-center gap-7">
+          {navLinks.map((link) => {
+            if (link.isPill) {
+              return (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200/80 hover:bg-rose-100 hover:border-rose-300 transition-all shadow-2xs hover:scale-105"
+                >
+                  <Sparkles size={13} className="text-rose-500 animate-pulse" />
+                  <span>{link.name}</span>
+                </Link>
+              );
+            }
+
+            return (
+              <a
+                key={link.name}
+                href={link.href}
+                className="text-sm font-medium text-[#333333] hover:text-[#171717] transition-colors relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1.5px] after:bg-rose-600 hover:after:w-full after:transition-all after:duration-200"
+              >
+                {link.name}
+              </a>
+            );
+          })}
         </nav>
 
         {/* Right: Actions */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex items-center gap-5">
           <Link
             href="/login"
             className="text-sm font-medium text-[#171717] hover:text-rose-600 transition-colors"
@@ -92,9 +121,14 @@ export default function Navigation() {
                 key={link.name}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-base font-medium text-[#171717] hover:text-[#777777] transition-colors"
+                className="text-base font-medium text-[#171717] hover:text-[#777777] transition-colors flex items-center justify-between"
               >
-                {link.name}
+                <span>{link.name}</span>
+                {link.isPill && (
+                  <span className="text-[10px] font-mono font-bold bg-rose-600 text-white px-2 py-0.5 rounded-full">
+                    NEW
+                  </span>
+                )}
               </a>
             ))}
           </nav>
@@ -119,4 +153,3 @@ export default function Navigation() {
     </header>
   );
 }
-
