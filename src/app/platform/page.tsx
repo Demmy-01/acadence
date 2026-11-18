@@ -31,7 +31,7 @@ export default function PlatformPage() {
       <FAQSection />
 
       {/* 07. SECTION FIVE — FINAL CTA & FOOTER ("Begin Your Thesis Journey") */}
-      <FinalCTAAndFooter />
+      <FinalCTAAndFooter variant="platform" />
     </main>
   );
 }

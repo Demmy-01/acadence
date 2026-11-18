@@ -27,7 +27,7 @@ export default function Home() {
       <BuiltForDisciplinesSection />
 
       {/* 06. SECTION FOUR — FINAL CTA & FOOTER ("Begin Your Thesis Journey") */}
-      <FinalCTAAndFooter />
+      <FinalCTAAndFooter variant="home" />
     </main>
   );
 }

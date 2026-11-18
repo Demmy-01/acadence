@@ -48,7 +48,7 @@ export const disciplines: Discipline[] = [
     accentText: "text-blue-600",
     accentBorder: "border-blue-500",
     accentPill: "bg-blue-50 text-blue-800 border-blue-200",
-    image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80",
+    image: "/images/feature-studio.jpg",
     fallbackImage: "/images/feature-studio.jpg",
     fallbackBg: "#0f172a",
     focus:
@@ -64,7 +64,7 @@ export const disciplines: Discipline[] = [
     accentText: "text-rose-600",
     accentBorder: "border-rose-500",
     accentPill: "bg-rose-50 text-rose-800 border-rose-200",
-    image: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=800&q=80",
+    image: "/images/feature-workspace.jpg",
     fallbackImage: "/images/feature-workspace.jpg",
     fallbackBg: "#1c1917",
     focus:
@@ -80,7 +80,7 @@ export const disciplines: Discipline[] = [
     accentText: "text-amber-600",
     accentBorder: "border-amber-500",
     accentPill: "bg-amber-50 text-amber-800 border-amber-200",
-    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80",
+    image: "/images/stage-01-onboarding.jpg",
     fallbackImage: "/images/stage-01-onboarding.jpg",
     fallbackBg: "#1c1917",
     focus:
@@ -96,7 +96,7 @@ export const disciplines: Discipline[] = [
     accentText: "text-emerald-600",
     accentBorder: "border-emerald-500",
     accentPill: "bg-emerald-50 text-emerald-800 border-emerald-200",
-    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=800&q=80",
+    image: "/images/feature-methodology.jpg",
     fallbackImage: "/images/feature-methodology.jpg",
     fallbackBg: "#064e3b",
     focus:
@@ -112,7 +112,7 @@ export const disciplines: Discipline[] = [
     accentText: "text-indigo-600",
     accentBorder: "border-indigo-500",
     accentPill: "bg-indigo-50 text-indigo-800 border-indigo-200",
-    image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=800&q=80",
+    image: "/images/problem-methodology.jpg",
     fallbackImage: "/images/problem-methodology.jpg",
     fallbackBg: "#1e1b4b",
     focus:
@@ -130,7 +130,7 @@ export const disciplines: Discipline[] = [
     accentText: "text-orange-600",
     accentBorder: "border-orange-500",
     accentPill: "bg-orange-50 text-orange-800 border-orange-200",
-    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80",
+    image: "/images/hero-library-architecture.jpg",
     fallbackImage: "/images/feature-studio.jpg",
     fallbackBg: "#1e293b",
     focus:
@@ -146,7 +146,7 @@ export const disciplines: Discipline[] = [
     accentText: "text-purple-600",
     accentBorder: "border-purple-500",
     accentPill: "bg-purple-50 text-purple-800 border-purple-200",
-    image: "https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&w=800&q=80",
+    image: "/images/stage-03-foundation.jpg",
     fallbackImage: "/images/stage-03-foundation.jpg",
     fallbackBg: "#2e1065",
     focus:
@@ -162,7 +162,7 @@ export const disciplines: Discipline[] = [
     accentText: "text-slate-700",
     accentBorder: "border-slate-600",
     accentPill: "bg-slate-100 text-slate-800 border-slate-300",
-    image: "https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=800&q=80",
+    image: "/images/hero-scholar.jpg",
     fallbackImage: "/images/hero-library-architecture.jpg",
     fallbackBg: "#0f172a",
     focus:
@@ -178,7 +178,7 @@ export const disciplines: Discipline[] = [
     accentText: "text-teal-600",
     accentBorder: "border-teal-500",
     accentPill: "bg-teal-50 text-teal-800 border-teal-200",
-    image: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=800&q=80",
+    image: "/images/feature-discover.jpg",
     fallbackImage: "/images/feature-discover.jpg",
     fallbackBg: "#042f2e",
     focus:
@@ -194,7 +194,7 @@ export const disciplines: Discipline[] = [
     accentText: "text-rose-700",
     accentBorder: "border-rose-600",
     accentPill: "bg-rose-50 text-rose-800 border-rose-200",
-    image: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=800&q=80",
+    image: "/images/stage-04-develop.jpg",
     fallbackImage: "/images/hero-scholar.jpg",
     fallbackBg: "#1c1917",
     focus:
