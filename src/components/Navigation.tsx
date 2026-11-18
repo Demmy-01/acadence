@@ -7,7 +7,11 @@ import { usePathname } from "next/navigation";
 import { Menu, X, ArrowUpRight, Sparkles } from "lucide-react";
 import GlassLogo from "@/components/GlassLogo";
 
-export default function Navigation() {
+interface NavigationProps {
+  variant?: "home" | "platform";
+}
+
+export default function Navigation({ variant }: NavigationProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
@@ -24,10 +28,16 @@ export default function Navigation() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Deterministic page check: if variant prop is provided, SSR and client match 100% identically.
+  // Otherwise fall back to route detection via usePathname.
   const isPlatformPage =
-    pathname?.startsWith("/platform") ||
-    pathname?.startsWith("/features") ||
-    pathname?.startsWith("/workflow");
+    variant !== undefined
+      ? variant === "platform"
+      : Boolean(
+          pathname?.startsWith("/platform") ||
+            pathname?.startsWith("/features") ||
+            pathname?.startsWith("/workflow")
+        );
 
   // Dynamic Navigation Links depending on which page the user is viewing
   const navLinks = isPlatformPage
@@ -59,7 +69,7 @@ export default function Navigation() {
         <GlassLogo href="/" size="md" textColor="dark" />
 
         {/* Center: Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-7">
+        <nav className="hidden md:flex items-center gap-7" suppressHydrationWarning>
           {navLinks.map((link) => {
             if (link.isPill) {
               return (
@@ -69,7 +79,7 @@ export default function Navigation() {
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200/80 hover:bg-rose-100 hover:border-rose-300 transition-all shadow-2xs hover:scale-105"
                 >
                   <Sparkles size={13} className="text-rose-500 animate-pulse" />
-                  <span>{link.name}</span>
+                  <span suppressHydrationWarning>{link.name}</span>
                 </Link>
               );
             }
@@ -80,7 +90,7 @@ export default function Navigation() {
                 href={link.href}
                 className="text-sm font-medium text-[#333333] hover:text-[#171717] transition-colors relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1.5px] after:bg-rose-600 hover:after:w-full after:transition-all after:duration-200"
               >
-                {link.name}
+                <span suppressHydrationWarning>{link.name}</span>
               </a>
             );
           })}
@@ -115,7 +125,7 @@ export default function Navigation() {
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-[#FFFFFF] border-b border-[#E5E5E5] px-6 py-8 space-y-4 shadow-xl">
-          <nav className="flex flex-col space-y-4">
+          <nav className="flex flex-col space-y-4" suppressHydrationWarning>
             {navLinks.map((link) => (
               <a
                 key={link.name}
@@ -123,7 +133,7 @@ export default function Navigation() {
                 onClick={() => setMobileMenuOpen(false)}
                 className="text-base font-medium text-[#171717] hover:text-[#777777] transition-colors flex items-center justify-between"
               >
-                <span>{link.name}</span>
+                <span suppressHydrationWarning>{link.name}</span>
                 {link.isPill && (
                   <span className="text-[10px] font-mono font-bold bg-rose-600 text-white px-2 py-0.5 rounded-full">
                     NEW

@@ -13,7 +13,7 @@ export default function PlatformPage() {
   return (
     <main className="min-h-screen bg-[#FFFFFF] text-[#171717] selection:bg-[#171717] selection:text-[#FFFFFF]">
       {/* 01. NAVIGATION */}
-      <Navigation />
+      <Navigation variant="platform" />
 
       {/* 02. HERO SECTION — BRANDLYFT CURVED MARQUEE CAROUSEL WITH CURSOR SPEED CONTROL */}
       <PlatformHeroSection />
@@ -35,3 +35,4 @@ export default function PlatformPage() {
     </main>
   );
 }
+

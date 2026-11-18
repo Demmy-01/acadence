@@ -34,7 +34,7 @@ function AnimatedWords({
   const isInView = useInView(ref, { once: true, margin: "-60px" });
 
   return (
-    <span ref={ref} className={`inline-flex flex-wrap ${className}`}>
+    <span ref={ref} className={`inline-flex flex-wrap ${className}`} suppressHydrationWarning>
       {text.split(" ").map((word, i) => (
         <motion.span
           key={i}
@@ -50,6 +50,7 @@ function AnimatedWords({
             ease: [0.25, 0.46, 0.45, 0.94],
           }}
           className="mr-[0.3em] inline-block"
+          suppressHydrationWarning
         >
           {word}
         </motion.span>
@@ -80,6 +81,7 @@ function AnimatedCounter({
       animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.5 }}
       transition={{ duration: 0.6, ease: [0.34, 1.56, 0.64, 1] }}
       className={className}
+      suppressHydrationWarning
     >
       {value}
       {suffix}
